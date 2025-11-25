@@ -1,0 +1,58 @@
+name: release please
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      app-1--tag_name: ${{ steps.release.outputs.app-1--tag_name }}
+      app-1--release_created: ${{ steps.release.outputs.app-1--release_created }}
+      app-2--tag_name: ${{ steps.release.outputs.app-2--tag_name }}
+      app-2--release_created: ${{ steps.release.outputs.app-2--release_created }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          token: ${{ github.GIT }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  release-app-1:
+    if: ${{needs.release-please.outputs.app-1--release_created}}
+    runs-on: ubuntu-latest
+    needs: release-please
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Setup Golang
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: ./go.mod
+
+      - name: Build
+        run: go build ./apps/app1/cmd/
+
+  release-app-2:
+    if: ${{needs.release-please.outputs.app-2--release_created}}
+    runs-on: ubuntu-latest
+    needs: release-please
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Setup Golang
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: ./go.mod
+
+      - name: Build
+        run: go build ./apps/app2/cmd/
