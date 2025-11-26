@@ -1,11 +1,12 @@
 {
   "release-type": "go",
   "separate-pull-requests": true,
-  "extra-files": ["shared/**/*.go"],
   "draft": true,
+  "draft-pull-request": true,
   "packages": {
     "apps/app1": {
-      "package-name": "app1"
+      "package-name": "app1",
+      "extra-files": ["shared/some-shared-dep/foo.go"]
     },
     "apps/app2": {
       "package-name": "app2"
