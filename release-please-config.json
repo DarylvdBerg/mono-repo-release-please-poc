@@ -5,12 +5,21 @@
   "draft-pull-request": true,
   "packages": {
     "apps/app1": {
-      "package-name": "app1",
-      "extra-files": ["shared/some-shared-dep/foo.go"]
+      "package-name": "app1"
     },
     "apps/app2": {
       "package-name": "app2"
+    },
+    "shared": {
+      "skip-github-release": true,
+      "skip-changelog": true
     }
   },
+  "plugins": [
+    {
+      "type": "group-priority",
+      "groups": ["apps/app1", "shared"]
+    }
+  ],
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/refs/heads/main/schemas/config.json"
 }
