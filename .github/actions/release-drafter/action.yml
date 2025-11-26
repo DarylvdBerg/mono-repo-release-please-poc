@@ -24,6 +24,7 @@ runs:
       with:
         include-paths: ${{ inputs.include-paths }}
         name-template: ${{ inputs.name-template }}
+        tag-prefix: ${{ inputs.tag-template }}
         tag-template: ${{ inputs.tag-template }}
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
