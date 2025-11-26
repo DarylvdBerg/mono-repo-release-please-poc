@@ -14,11 +14,14 @@ on:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    strategy:
+    matrix:
+      app: ["app1"]
     steps:
       - uses: googleapis/release-please-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           include-component-in-tag: true
           release-type: go
-          path: "apps/app1"
+          path: "apps/${{ matrix.app }}"
           manifest-file: .release-please-manifest.json
