@@ -27,4 +27,6 @@ jobs:
       - uses: ./.github/actions/release-drafter
         with:
           include-paths: '["apps/${{ matrix.app }}/**", "shared/**"]'
+          name-template: "${{ matrix.app }}/v$RESOLVED_VERSION 🌈"
+          tag-template: "${{ matrix.app }}/v$RESOLVED_VERSION"
           github-token: ${{ secrets.GITHUB_TOKEN }}
