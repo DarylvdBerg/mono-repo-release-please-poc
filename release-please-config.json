@@ -1,6 +1,7 @@
 {
   "release-type": "go",
   "separate-pull-requests": true,
+  "extra-files": ["shared"],
   "packages": {
     "apps/app1": {
       "package-name": "app1"
