@@ -9,16 +9,12 @@
     },
     "apps/app2": {
       "package-name": "app2"
-    },
-    "shared": {
-      "skip-github-release": true,
-      "skip-changelog": true
     }
   },
   "plugins": [
     {
-      "type": "group-priority",
-      "groups": ["apps/app1", "shared"]
+      "type": "node-workspace",
+      "updatePeerDependencies": true
     }
   ],
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/refs/heads/main/schemas/config.json"
