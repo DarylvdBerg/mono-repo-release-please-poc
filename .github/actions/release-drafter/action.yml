@@ -1,0 +1,19 @@
+name: 'Release Drafter with Include Paths'
+description: 'A reusable action for release-drafter with configurable include-paths'
+inputs:
+  include-paths:
+    description: 'Array of paths to include (as JSON array string, e.g., ["apps/app1/**", "apps/app2/**"])'
+    required: false
+    default: '[]'
+  github-token:
+    description: 'GitHub token for authentication'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: release-drafter/release-drafter@v6
+      with:
+        include-paths: ${{ inputs.include-paths }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
