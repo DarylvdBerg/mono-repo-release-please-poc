@@ -3,6 +3,12 @@
   "separate-pull-requests": true,
   "draft": true,
   "draft-pull-request": true,
+  "extra-files": [
+    {
+      "type": "generic",
+      "path": "shared/some-shared-dep/foo.go"
+    }
+  ],
   "packages": {
     "apps/app1": {
       "package-name": "app1"
