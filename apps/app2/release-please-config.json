@@ -4,6 +4,7 @@
   "draft": true,
   "draft-pull-request": true,
   "include-component-in-tag": true,
+  "always-update": true,
   "packages": {
     "apps/app2": {
       "package-name": "app2"
