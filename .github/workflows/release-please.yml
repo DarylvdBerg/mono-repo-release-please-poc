@@ -24,4 +24,4 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           manifest-file: .release-please-manifest.json
-          config-file: apps/${{ matrix.app }}
+          config-file: apps/${{ matrix.app }}/release-please-config.json
