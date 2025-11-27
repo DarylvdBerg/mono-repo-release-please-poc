@@ -1,0 +1,102 @@
+name: Check dependencies changed
+
+on:
+  workflow_call:
+    outputs:
+      affected-apps:
+        description: "List of applications affected by the changes"
+        value: ${{ jobs.analyze-dependencies.outputs.affected-apps }}
+      amount:
+        description: "Number of affected applications"
+        value: ${{ jobs.analyze-dependencies.outputs.amount }}
+      any:
+        description: "Whether any applications are affected"
+        value: ${{ jobs.analyze-dependencies.outputs.any }}
+
+jobs:
+  analyze-dependencies:
+    runs-on: ubuntu-latest
+    name: Analyze Dependency Changes
+    permissions:
+      contents: read
+      packages: read
+    outputs:
+      affected-apps: ${{ steps.analyze.outputs.affected-apps }}
+      amount: ${{ steps.analyze.outputs.amount }}
+      any: ${{ steps.analyze.outputs.any }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Golang
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: ./go.mod
+
+      # Using git diff to analyze changes, and go list to determine dependencies
+      - name: Analyze dependency graph
+        id: analyze
+        run: |
+          # Get changed files
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            # Base ref is already fetched by checkout action with fetch-depth: 0
+            CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          else
+            CHANGED_FILES=$(git diff --name-only HEAD~1..HEAD)
+          fi
+
+          echo "## Affected Apps" >> $GITHUB_STEP_SUMMARY
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          AFFECTED_APPS="[]"
+
+          # Check each app for dependency changes
+          for app_dir in apps/*; do
+            if [ ! -d "$app_dir" ]; then
+              continue
+            fi
+
+            app_name=$(basename "$app_dir")
+            should_build=false
+
+            # Direct app changes
+            if echo "$CHANGED_FILES" | grep -q "^$app_dir/"; then
+              should_build=true
+              echo "Direct changes in $app_name"
+            fi
+
+            # Check go.mod/go.sum changes
+            if echo "$CHANGED_FILES" | grep -qE "^(go\.mod|go\.sum)$"; then
+              should_build=true
+              echo "Module dependency change affects $app_name"
+            fi
+
+            # Check if pkg/ changed (shared internal packages)
+            if echo "$CHANGED_FILES" | grep -q "^pkg/"; then
+              # Use go list to check if app depends on changed pkg
+              cd "$app_dir"
+              if go list -f '{{.Imports}}' ./... 2>/dev/null | grep -q "github.com/DarylvdBerg/mono-repo-release-please-poc/shared"; then
+                should_build=true
+                echo "Dependency change affects $app_name"
+              fi
+              cd - > /dev/null
+            fi
+
+            if [ "$should_build" = true ]; then
+              AFFECTED_APPS=$(echo "$AFFECTED_APPS" | jq -c ". + [\"$app_name\"]")
+              echo "- $app_name" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+
+          AFFECTED_COUNT=$(echo "$AFFECTED_APPS" | jq 'length')
+
+          echo "affected-apps=$AFFECTED_APPS" >> $GITHUB_OUTPUT
+          echo "amount=$AFFECTED_COUNT" >> $GITHUB_OUTPUT
+          if [ "$AFFECTED_COUNT" -gt 0 ]; then
+            echo "any=true" >> $GITHUB_OUTPUT
+          else
+            echo "any=false" >> $GITHUB_OUTPUT
+          fi

@@ -1,9 +1,9 @@
 package main
 
-import "fmt"
+import (
+	someshareddep "github.com/DarylvdBerg/mono-release-me-poc/shared/some-shared-dep"
+)
 
 func main() {
-	fmt.Println("App 2")
-	fmt.Println("App 2 - Change!")
-	fmt.Println("App 2 - Change!")
+	someshareddep.Hello()
 }

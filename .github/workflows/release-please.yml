@@ -4,6 +4,7 @@ permissions:
   contents: write
   issues: write
   pull-requests: write
+  packages: read
 
 on:
   push:
@@ -12,16 +13,22 @@ on:
   workflow_dispatch:
 
 jobs:
+  detect-changes:
+    uses: ./.github/workflows/detect-changes.yaml
+    secrets: inherit
+
   release-please:
+    needs:
+      - detect-changes
+    if: needs.detect-changes.outputs.any == 'true'
     strategy:
       matrix:
-        app:
-          - app1
-          - app2
+        app: ${{ fromJSON(needs.detect-changes.outputs.affected-apps) }}
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          path: "apps/${{ matrix.app }}"
           manifest-file: .release-please-manifest.json
           config-file: apps/${{ matrix.app }}/release-please-config.json
