@@ -78,7 +78,7 @@ jobs:
             if echo "$CHANGED_FILES" | grep -q "^shared/"; then
               # Use go list to check if app depends on changed pkg
               cd "$app_dir"
-              if go list -f '{{.Imports}}' ./... 2>/dev/null | grep -q "github.com/DarylvdBerg/mono-repo-release-please-poc/shared/**"; then
+              if go list -f '{{.Imports}}' ./... 2>/dev/null | grep -q "github.com/DarylvdBerg/mono-repo-release-please-poc/shared"; then
                 should_build=true
                 echo "Dependency change affects $app_name"
               fi
