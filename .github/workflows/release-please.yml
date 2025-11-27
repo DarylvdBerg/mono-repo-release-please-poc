@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         app:
-          - app1
+          - app2
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v4
@@ -26,4 +26,4 @@ jobs:
           release-type: go
           path: apps/${{ matrix.app }}
           manifest-file: .release-please-manifest.json
-          config-file: release-please-config.json
+          # config-file: release-please-config.json
