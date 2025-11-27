@@ -31,7 +31,7 @@ jobs:
           node-version: 23
       - id: release-please
         run: |
-          npx -y github:stan-stately/release-please#stan/additional-package-paths release-pr \
+          npx -y github:stan-stately/release-please#ac309f0b74f5302eee2acda68808446a4491a813 release-pr \
             --token ${{ secrets.GITHUB_TOKEN }} \
             --repo-url ${{ github.repository }} \
             --config-file apps/${{ matrix.app }}/release-please-config.json \
