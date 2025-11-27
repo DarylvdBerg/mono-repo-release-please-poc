@@ -26,9 +26,13 @@ jobs:
         app: ${{ fromJSON(needs.detect-changes.outputs.affected-apps) }}
     runs-on: ubuntu-latest
     steps:
-      - uses: googleapis/release-please-action@v4
+      - uses: actions/setup-node@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          path: "apps/${{ matrix.app }}"
-          manifest-file: .release-please-manifest.json
-          config-file: apps/${{ matrix.app }}/release-please-config.json
+          node-version: 23
+      - id: release-please
+        run: |
+          npx -y github:stan-stately/release-please#stan/additional-package-paths release-pr \
+            --token xxx \
+            --repo-url ${{ github.repository }} \
+            --config-file apps/${{ matrix.app }}/release-please-config.json \
+            --manifest-file .release-please-manifest.json

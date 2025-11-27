@@ -5,8 +5,11 @@
   "draft-pull-request": true,
   "include-component-in-tag": true,
   "always-update": true,
-  "additional-paths": ["../../shared"],
+  "additional-paths": ["shared"],
   "packages": {
+    "apps/app1": {
+      "package-name": "app1"
+    },
     "apps/app2": {
       "package-name": "app2"
     }
