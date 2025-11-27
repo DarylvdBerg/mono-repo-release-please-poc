@@ -53,6 +53,13 @@ jobs:
 
           AFFECTED_APPS="[]"
 
+          # Check if shared folder changed - affects all apps
+          SHARED_CHANGED=false
+          if echo "$CHANGED_FILES" | grep -q "^shared/"; then
+            SHARED_CHANGED=true
+            echo "Shared folder changed - all apps affected"
+          fi
+
           # Check each app for dependency changes
           for app_dir in apps/*; do
             if [ ! -d "$app_dir" ]; then
@@ -61,6 +68,12 @@ jobs:
 
             app_name=$(basename "$app_dir")
             should_build=false
+
+            # If shared changed, all apps should build
+            if [ "$SHARED_CHANGED" = true ]; then
+              should_build=true
+              echo "Shared dependency change affects $app_name"
+            fi
 
             # Direct app changes
             if echo "$CHANGED_FILES" | grep -q "^$app_dir/"; then
@@ -72,17 +85,6 @@ jobs:
             if echo "$CHANGED_FILES" | grep -qE "^(go\.mod|go\.sum)$"; then
               should_build=true
               echo "Module dependency change affects $app_name"
-            fi
-
-            # Check if pkg/ changed (shared internal packages)
-            if echo "$CHANGED_FILES" | grep -q "^shared/"; then
-              # Use go list to check if app depends on changed pkg
-              cd "$app_dir"
-              if go list -f '{{.Imports}}' ./... 2>/dev/null | grep -q "github.com/DarylvdBerg/mono-repo-release-please-poc/shared"; then
-                should_build=true
-                echo "Dependency change affects $app_name"
-              fi
-              cd - > /dev/null
             fi
 
             if [ "$should_build" = true ]; then
