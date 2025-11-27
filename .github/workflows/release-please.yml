@@ -27,4 +27,5 @@ jobs:
           release-type: go
           path: apps/${{ matrix.app }}
           manifest-file: .release-please-manifest.json
+          target-branch: release-please--branch-${{ matrix.app }}
           # config-file: release-please-config.json
