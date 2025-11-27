@@ -75,7 +75,7 @@ jobs:
             fi
 
             # Check if pkg/ changed (shared internal packages)
-            if echo "$CHANGED_FILES" | grep -q "^pkg/"; then
+            if echo "$CHANGED_FILES" | grep -q "^shared/"; then
               # Use go list to check if app depends on changed pkg
               cd "$app_dir"
               if go list -f '{{.Imports}}' ./... 2>/dev/null | grep -q "github.com/DarylvdBerg/mono-repo-release-please-poc/shared"; then
