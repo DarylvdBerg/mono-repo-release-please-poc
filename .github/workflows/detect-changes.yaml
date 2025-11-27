@@ -53,24 +53,11 @@ jobs:
 
           AFFECTED_APPS="[]"
 
-          # Check if shared folder changed - need to determine which apps use it
+          # Check if shared folder changed - affects all apps
           SHARED_CHANGED=false
-          CHANGED_SHARED_PACKAGES=()
           if echo "$CHANGED_FILES" | grep -q "^shared/"; then
             SHARED_CHANGED=true
-            echo "Shared folder changed - analyzing which apps are affected"
-            
-            # Get the specific shared packages that changed
-            while IFS= read -r file; do
-              if [[ "$file" =~ ^shared/([^/]+) ]]; then
-                pkg="${BASH_REMATCH[1]}"
-                if [[ ! " ${CHANGED_SHARED_PACKAGES[@]} " =~ " ${pkg} " ]]; then
-                  CHANGED_SHARED_PACKAGES+=("$pkg")
-                fi
-              fi
-            done <<< "$CHANGED_FILES"
-            
-            echo "Changed shared packages: ${CHANGED_SHARED_PACKAGES[*]}"
+            echo "Shared folder changed - all apps affected"
           fi
 
           # Check each app for dependency changes
@@ -82,6 +69,12 @@ jobs:
             app_name=$(basename "$app_dir")
             should_build=false
 
+            # If shared changed, all apps should build
+            if [ "$SHARED_CHANGED" = true ]; then
+              should_build=true
+              echo "Shared dependency change affects $app_name"
+            fi
+
             # Direct app changes
             if echo "$CHANGED_FILES" | grep -q "^$app_dir/"; then
               should_build=true
@@ -92,18 +85,6 @@ jobs:
             if echo "$CHANGED_FILES" | grep -qE "^(go\.mod|go\.sum)$"; then
               should_build=true
               echo "Module dependency change affects $app_name"
-            fi
-
-            # If shared changed, check if this app uses any of the changed packages
-            if [ "$SHARED_CHANGED" = true ] && [ "$should_build" = false ]; then
-              # Search for imports in the app's Go files (up to 4 levels deep)
-              for pkg in "${CHANGED_SHARED_PACKAGES[@]}"; do
-                if grep -r --include="*.go" --max-depth=4 "github.com/DarylvdBerg/mono-repo-release-please-poc/shared/$pkg" "$app_dir" > /dev/null 2>&1; then
-                  should_build=true
-                  echo "Shared package '$pkg' is used by $app_name"
-                  break
-                fi
-              done
             fi
 
             if [ "$should_build" = true ]; then
