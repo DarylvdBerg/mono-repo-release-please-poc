@@ -23,7 +23,5 @@ jobs:
       - uses: googleapis/release-please-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          path: apps/${{ matrix.app }}
-          release-type: simple
-          include-component-in-tag: true
           manifest-file: .release-please-manifest.json
+          config-file: apps/${{ matrix.app }}

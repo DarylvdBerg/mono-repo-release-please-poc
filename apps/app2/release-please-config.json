@@ -1,0 +1,13 @@
+{
+  "release-type": "go",
+  "separate-pull-requests": true,
+  "draft": true,
+  "draft-pull-request": true,
+  "include-component-in-tag": true,
+  "packages": {
+    "apps/app2": {
+      "package-name": "app2"
+    }
+  },
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/refs/heads/main/schemas/config.json"
+}
