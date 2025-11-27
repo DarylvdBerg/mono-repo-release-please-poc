@@ -16,6 +16,7 @@ jobs:
     strategy:
       matrix:
         app:
+          - app1
           - app2
     runs-on: ubuntu-latest
     steps:
