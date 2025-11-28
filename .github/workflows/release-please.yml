@@ -13,6 +13,31 @@ on:
   workflow_dispatch:
 
 jobs:
+  check-source:
+    runs-on: ubuntu-latest
+    outputs:
+      should-release: ${{ steps.check.outputs.should-release }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check if push came from release-please branch
+        id: check
+        run: |
+          # Get the commit message
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+
+          # Check if commit message indicates it's from release-please
+          # Release-please commits typically have a specific format
+          if echo "$COMMIT_MSG" | grep -qE "^chore\(main\): release"; then
+            echo "should-release=true" >> $GITHUB_OUTPUT
+            echo "Push came from release-please branch"
+          else
+            echo "should-release=false" >> $GITHUB_OUTPUT
+            echo "Push did not come from release-please branch"
+          fi
+
   detect-changes:
     uses: ./.github/workflows/detect-changes.yaml
     secrets: inherit
@@ -20,7 +45,8 @@ jobs:
   release-please:
     needs:
       - detect-changes
-    if: needs.detect-changes.outputs.any == 'true'
+      - check-source
+    if: needs.detect-changes.outputs.any == 'true' && needs.check-source.outputs.should-release == 'false'
     strategy:
       matrix:
         app: ${{ fromJSON(needs.detect-changes.outputs.affected-apps) }}
@@ -32,6 +58,27 @@ jobs:
       - id: release-please
         run: |
           npx -y github:stan-stately/release-please#ac309f0 release-pr \
+            --token ${{ secrets.GITHUB_TOKEN }} \
+            --repo-url ${{ github.repository }} \
+            --config-file apps/${{ matrix.app }}/release-please-config.json \
+            --manifest-file .release-please-manifest.json
+
+  create-release:
+    needs:
+      - check-source
+      - detect-changes
+    if: needs.check-source.outputs.should-release == 'true' && needs.detect-changes.outputs.any == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: ${{ fromJSON(needs.detect-changes.outputs.affected-apps) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Releases
+        id: github-release
+        run: |
+          npx -y github:stan-stately/release-please#stan/additional-package-paths github-release \
             --token ${{ secrets.GITHUB_TOKEN }} \
             --repo-url ${{ github.repository }} \
             --config-file apps/${{ matrix.app }}/release-please-config.json \
