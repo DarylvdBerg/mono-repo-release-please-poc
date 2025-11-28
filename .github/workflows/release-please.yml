@@ -78,7 +78,7 @@ jobs:
       - name: Create Releases
         id: github-release
         run: |
-          npx -y github:stan-stately/release-please#stan/additional-package-paths github-release \
+          npx -y github:stan-stately/release-please#ac309f0 github-release \
             --token ${{ secrets.GITHUB_TOKEN }} \
             --repo-url ${{ github.repository }} \
             --config-file apps/${{ matrix.app }}/release-please-config.json \
