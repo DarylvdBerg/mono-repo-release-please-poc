@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.0](https://github.com/DarylvdBerg/mono-repo-release-please-poc/compare/app2-v1.1.0...app2-v1.2.0) (2025-11-28)
+
+
+### Features
+
+* new change in app 2 ([1d32ff5](https://github.com/DarylvdBerg/mono-repo-release-please-poc/commit/1d32ff5b06f3e029f3d0183c5f11f1e21fb27b69))
+* update release config with pr header ([bbd421a](https://github.com/DarylvdBerg/mono-repo-release-please-poc/commit/bbd421a59b89bc1cc30c520558a6a63c606dbc5d))
+
 ## [1.1.0](https://github.com/DarylvdBerg/mono-repo-release-please-poc/compare/app2-v1.0.0...app2-v1.1.0) (2025-11-28)
 
 
