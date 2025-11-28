@@ -4,7 +4,7 @@
   "draft": true,
   "draft-pull-request": true,
   "include-component-in-tag": true,
-  "pull-request-header": "A new draft release is created for app2",
+  "pull-request-header": "A new release is ready for app 2!",
   "always-update": true,
   "packages": {
     "apps/app2": {
