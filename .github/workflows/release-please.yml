@@ -42,7 +42,7 @@ jobs:
     uses: ./.github/workflows/detect-changes.yaml
     secrets: inherit
 
-  release-please:
+  update-release-prs:
     needs:
       - detect-changes
       - check-source
@@ -63,7 +63,7 @@ jobs:
             --config-file apps/${{ matrix.app }}/release-please-config.json \
             --manifest-file .release-please-manifest.json
 
-  create-release:
+  create-github-release:
     needs:
       - check-source
       - detect-changes
