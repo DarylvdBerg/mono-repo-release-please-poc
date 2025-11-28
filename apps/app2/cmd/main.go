@@ -10,4 +10,8 @@ func main() {
 	someshareddep.Hello()
 	fmt.Print("HELLo")
 	fmt.Print("HELLo")
+	fmt.Print("HELLo")
+	fmt.Print("HELLo")
+	fmt.Print("HELLo")
+	fmt.Print("HELLo")
 }
